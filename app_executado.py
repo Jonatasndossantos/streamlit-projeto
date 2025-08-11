@@ -5,7 +5,14 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import numpy as np
 from datetime import datetime
-from scipy.stats import entropy
+
+def entropy_custom(p):
+    """Custom entropy function to replace scipy.stats.entropy"""
+    p = np.array(p)
+    p = p[p > 0]  # Remove zero probabilities
+    if len(p) == 0:
+        return 0.0
+    return -np.sum(p * np.log(p))
 
 # Configuração da página
 st.set_page_config(
@@ -591,7 +598,7 @@ elif opcao == "🎯 Métricas Completas":
             valores_norm = receitas_por_categoria.values / receitas_por_categoria.sum()
             # Evitar log(0) adicionando pequeno valor
             valores_norm = valores_norm + 1e-10
-            diversificacao = entropy(valores_norm) / np.log(len(valores_norm)) * 100
+            diversificacao = entropy_custom(valores_norm) / np.log(len(valores_norm)) * 100
         else:
             diversificacao = 0
         
